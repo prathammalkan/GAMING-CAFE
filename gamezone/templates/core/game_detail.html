@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}DEMON ZONE | {{ game.title }}{% endblock %}
+
+{% block content %}
+<section class="detail-hero glass-card">
+    <div class="detail-backdrop" style="background-image: linear-gradient(135deg, rgba(7, 10, 23, 0.2), rgba(7, 10, 23, 0.88)), url('{{ game.banner_url }}');"></div>
+    <div class="detail-grid">
+        <div class="detail-copy">
+            <span class="eyebrow">{{ game.hero_badge }}</span>
+            <h1>{{ game.title }}</h1>
+            <p class="hero-tagline">{{ game.tagline }}</p>
+            <p>{{ game.description }}</p>
+            <div class="hero-meta">
+                <span>{{ game.studio }}</span>
+                <span>{{ game.release_year }}</span>
+                <span>{{ game.age_rating }}</span>
+                <span>{{ game.playtime }}</span>
+            </div>
+            <div class="chip-row">
+                {% for genre in game.genres.all %}
+                    <span class="chip">{{ genre.name }}</span>
+                {% endfor %}
+            </div>
+            <div class="hero-actions">
+                <form action="{% url 'toggle-wishlist' game.slug %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button class="button-primary" type="submit">
+                        {% if in_wishlist %}Remove from wishlist{% else %}Save to wishlist{% endif %}
+                    </button>
+                </form>
+                <a class="button-secondary" href="{% url 'browse' %}">Back to browse</a>
+            </div>
+        </div>
+        <aside class="detail-side glass-card">
+            <img src="{{ game.cover_url }}" alt="{{ game.title }} cover">
+            <div class="side-stat">
+                <span>Critic score</span>
+                <strong>{{ game.critic_score }}/100</strong>
+            </div>
+            <div class="side-stat">
+                <span>Player rating</span>
+                <strong>{{ game.player_rating }}/5</strong>
+            </div>
+            <div class="side-stat">
+                <span>Price</span>
+                <strong>Rs. {{ game.active_price }}</strong>
+            </div>
+            <div class="platform-list">
+                {% for platform in game.platforms.all %}
+                    <span class="chip">{{ platform.name }}</span>
+                {% endfor %}
+            </div>
+        </aside>
+    </div>
+</section>
+
+{% if game.trailer_url %}
+    <section class="media-showcase glass-card">
+        <div class="section-heading compact">
+            <div>
+                <span class="eyebrow">Trailer</span>
+                <h2>See the world in motion</h2>
+            </div>
+        </div>
+        <div class="video-frame">
+            <iframe src="{{ game.trailer_url }}" title="{{ game.title }} trailer" allowfullscreen></iframe>
+        </div>
+    </section>
+{% endif %}
+
+<section class="gallery-grid">
+    {% for image in game.gallery.all %}
+        <article class="gallery-card glass-card">
+            <img src="{{ image.image_url }}" alt="{{ image.caption|default:game.title }}">
+            <p>{{ image.caption }}</p>
+        </article>
+    {% empty %}
+        <article class="empty-card glass-card">
+            <h3>No gallery yet</h3>
+            <p>Add gallery frames in admin to expand the showcase.</p>
+        </article>
+    {% endfor %}
+</section>
+
+<section class="review-layout">
+    <div class="glass-card review-card">
+        <div class="section-heading compact">
+            <div>
+                <span class="eyebrow">Community</span>
+                <h2>Player reviews</h2>
+            </div>
+        </div>
+        <div class="review-stack">
+            {% for review in game.reviews.all %}
+                <article class="review-item">
+                    <div class="review-head">
+                        <strong>{{ review.title }}</strong>
+                        <span>{{ review.score }}/5 by {{ review.user.username }}</span>
+                    </div>
+                    <p>{{ review.body }}</p>
+                </article>
+            {% empty %}
+                <p class="muted">No reviews yet. Be the first to set the tone.</p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="glass-card review-card">
+        <div class="section-heading compact">
+            <div>
+                <span class="eyebrow">Your take</span>
+                <h2>Write a review</h2>
+            </div>
+        </div>
+        {% if request.user.is_authenticated %}
+            <form method="post" class="review-form">
+                {% csrf_token %}
+                {{ review_form.as_p }}
+                <button class="button-primary" type="submit">Publish review</button>
+            </form>
+        {% else %}
+            <p class="muted">Log in to publish a review and save games to your personal collection.</p>
+            <a class="button-primary" href="{% url 'login' %}?next={{ request.path }}">Login to continue</a>
+        {% endif %}
+    </div>
+</section>
+
+<section class="section-heading">
+    <div>
+        <span class="eyebrow">More like this</span>
+        <h2>Related picks</h2>
+    </div>
+</section>
+<section class="card-grid">
+    {% for game in related_games %}
+        {% include "core/partials/game_card.html" with game=game %}
+    {% empty %}
+        <article class="empty-card glass-card">
+            <h3>No related titles yet</h3>
+            <p>Add more genre-matched games to make this recommendation lane smarter.</p>
+        </article>
+    {% endfor %}
+</section>
+{% endblock %}

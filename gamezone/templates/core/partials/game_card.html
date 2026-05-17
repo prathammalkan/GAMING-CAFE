@@ -1,0 +1,26 @@
+<article class="game-card glass-card">
+    <a class="game-card-link" href="{{ game.get_absolute_url }}">
+        <div class="game-card-media">
+            <img src="{{ game.cover_url }}" alt="{{ game.title }}">
+        </div>
+        <div class="game-card-body">
+            <div class="card-topline">
+                <span>{{ game.release_year }}</span>
+                <span>{{ game.critic_score }}/100</span>
+            </div>
+            <h3>{{ game.title }}</h3>
+            <p>{{ game.tagline }}</p>
+            <div class="chip-row">
+                {% for genre in game.genres.all|slice:":2" %}
+                    <span class="chip">{{ genre.name }}</span>
+                {% endfor %}
+            </div>
+            <div class="price-row">
+                <strong>Rs. {{ game.active_price }}</strong>
+                {% if game.discount_price %}
+                    <small>Rs. {{ game.price }}</small>
+                {% endif %}
+            </div>
+        </div>
+    </a>
+</article>

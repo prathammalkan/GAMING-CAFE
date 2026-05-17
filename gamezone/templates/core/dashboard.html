@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}DEMON ZONE | Dashboard{% endblock %}
+
+{% block content %}
+<section class="dashboard-grid">
+    <article class="glass-card profile-card">
+        <span class="eyebrow">Account</span>
+        <h1>{{ request.user.username }}</h1>
+        <p>Track saved games, recent reviews, and your current discovery mood from one place.</p>
+        <div class="hero-meta">
+            <span>{{ request.user.date_joined|date:"M Y" }} member</span>
+            <span>{{ items|length }} saved</span>
+            <span>{{ reviews|length }} recent reviews</span>
+        </div>
+    </article>
+    <article class="glass-card dashboard-panel">
+        <div class="section-heading compact">
+            <div>
+                <span class="eyebrow">Saved now</span>
+                <h2>Wishlist preview</h2>
+            </div>
+        </div>
+        {% for item in items %}
+            <a class="dashboard-row" href="{{ item.game.get_absolute_url }}">
+                <img src="{{ item.game.cover_url }}" alt="{{ item.game.title }}">
+                <div>
+                    <strong>{{ item.game.title }}</strong>
+                    <p>{{ item.game.tagline }}</p>
+                </div>
+            </a>
+        {% empty %}
+            <p class="muted">No saved games yet. Start exploring the library.</p>
+        {% endfor %}
+    </article>
+    <article class="glass-card dashboard-panel">
+        <div class="section-heading compact">
+            <div>
+                <span class="eyebrow">Review feed</span>
+                <h2>Your latest reviews</h2>
+            </div>
+        </div>
+        {% for review in reviews %}
+            <div class="dashboard-review">
+                <strong>{{ review.game.title }}</strong>
+                <span>{{ review.score }}/5</span>
+                <p>{{ review.body|truncatechars:120 }}</p>
+            </div>
+        {% empty %}
+            <p class="muted">Your review voice is still waiting for its first post.</p>
+        {% endfor %}
+    </article>
+</section>
+{% endblock %}

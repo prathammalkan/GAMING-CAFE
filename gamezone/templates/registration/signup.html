@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}DEMON ZONE | Sign Up{% endblock %}
+
+{% block content %}
+<section class="auth-shell">
+    <div class="glass-card auth-card">
+        <span class="eyebrow">Join the library</span>
+        <h1>Create your DEMON ZONE account</h1>
+        <p>Save favorites, publish reviews, and shape your own premium game collection.</p>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="button-primary" type="submit">Create account</button>
+        </form>
+        <p class="muted">Already registered? <a class="text-link" href="{% url 'login' %}">Login instead</a></p>
+    </div>
+</section>
+{% endblock %}

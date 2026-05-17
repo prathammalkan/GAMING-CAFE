@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}DEMON ZONE | Browse{% endblock %}
+
+{% block content %}
+<section class="browse-header glass-card">
+    <div>
+        <span class="eyebrow">Discover</span>
+        <h1>Browse premium titles</h1>
+        <p>Search the collection, explore by genre, and sort by critical heat or release recency.</p>
+    </div>
+    <form class="filter-grid" method="get">
+        <input type="text" name="q" value="{{ filters.q }}" placeholder="Search by title, studio, or genre">
+        <select name="genre">
+            <option value="">All genres</option>
+            {% for genre in genres %}
+                <option value="{{ genre.slug }}" {% if filters.genre == genre.slug %}selected{% endif %}>{{ genre.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="platform">
+            <option value="">All platforms</option>
+            {% for platform in platforms %}
+                <option value="{{ platform.slug }}" {% if filters.platform == platform.slug %}selected{% endif %}>{{ platform.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="sort">
+            <option value="featured" {% if filters.sort == "featured" %}selected{% endif %}>Featured</option>
+            <option value="rating" {% if filters.sort == "rating" %}selected{% endif %}>Top rated</option>
+            <option value="latest" {% if filters.sort == "latest" %}selected{% endif %}>Latest</option>
+            <option value="price-low" {% if filters.sort == "price-low" %}selected{% endif %}>Price low to high</option>
+            <option value="price-high" {% if filters.sort == "price-high" %}selected{% endif %}>Price high to low</option>
+        </select>
+        <button class="button-primary" type="submit">Apply filters</button>
+    </form>
+</section>
+
+<section class="card-grid">
+    {% for game in games %}
+        {% include "core/partials/game_card.html" with game=game %}
+    {% empty %}
+        <article class="empty-card glass-card">
+            <h3>No games match these filters</h3>
+            <p>Try clearing one of the filters or add more titles from the admin panel.</p>
+        </article>
+    {% endfor %}
+</section>
+{% endblock %}

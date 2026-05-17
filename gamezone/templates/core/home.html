@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}DEMON ZONE | Home{% endblock %}
+
+{% block content %}
+{% if not database_ready %}
+<section class="glass-card empty-card">
+    <h3>Database setup is not complete yet</h3>
+    <p>Run `python manage.py migrate` first, then reload the app. If you want demo content, run `python manage.py seed_gamezone` after migrations finish.</p>
+</section>
+{% endif %}
+
+<section class="hero-panel">
+    {% if featured_game %}
+        <div class="hero-media" style="background-image: linear-gradient(135deg, rgba(9, 12, 28, 0.18), rgba(9, 12, 28, 0.88)), url('{{ featured_game.banner_url }}');"></div>
+        <div class="hero-content">
+            <span class="eyebrow">{{ featured_game.hero_badge }}</span>
+            <h1>{{ featured_game.title }}</h1>
+            <p class="hero-tagline">{{ featured_game.tagline }}</p>
+            <p class="hero-copy">{{ featured_game.short_description }}</p>
+            <div class="hero-meta">
+                <span>{{ featured_game.studio }}</span>
+                <span>{{ featured_game.release_year }}</span>
+                <span>{{ featured_game.critic_score }}/100</span>
+                <span>{{ featured_game.playtime }}</span>
+            </div>
+            <div class="hero-actions">
+                <a class="button-primary" href="{{ featured_game.get_absolute_url }}">View Experience</a>
+                <a class="button-secondary" href="{% url 'browse' %}">Browse Library</a>
+            </div>
+        </div>
+        <div class="hero-side-card glass-card">
+            <p class="mini-label">Editor's frame</p>
+            <img src="{{ featured_game.cover_url }}" alt="{{ featured_game.title }} cover">
+            <div class="side-card-text">
+                <strong>{{ featured_game.title }}</strong>
+                <span>From Rs. {{ featured_game.active_price }}</span>
+            </div>
+        </div>
+    {% else %}
+        <div class="hero-content hero-empty">
+            <span class="eyebrow">DEMON ZONE is ready</span>
+            <h1>Launch a game library that feels cinematic.</h1>
+            <p class="hero-copy">Add titles in admin or run the demo seed command to fill this homepage with premium content instantly.</p>
+            <div class="hero-actions">
+                <a class="button-primary" href="/admin/">Open Admin</a>
+            </div>
+        </div>
+    {% endif %}
+</section>
+
+<section class="stats-grid">
+    <article class="stat-card glass-card">
+        <span class="stat-value">{{ total_games }}</span>
+        <span class="stat-label">Games in library</span>
+    </article>
+    <article class="stat-card glass-card">
+        <span class="stat-value">{{ total_reviews }}</span>
+        <span class="stat-label">Community reviews</span>
+    </article>
+    <article class="stat-card glass-card">
+        <span class="stat-value">{{ total_platforms }}</span>
+        <span class="stat-label">Supported platforms</span>
+    </article>
+    <article class="stat-card glass-card">
+        <span class="stat-value">24/7</span>
+        <span class="stat-label">Discovery energy</span>
+    </article>
+</section>
+
+<section class="section-heading">
+    <div>
+        <span class="eyebrow">Curated categories</span>
+        <h2>Genres with atmosphere</h2>
+    </div>
+</section>
+<section class="genre-grid">
+    {% for genre in genres %}
+        <article class="genre-card" style="--accent: {{ genre.accent_color }};">
+            <span class="genre-icon">{{ genre.icon|upper|slice:":1" }}</span>
+            <h3>{{ genre.name }}</h3>
+            <p>{{ genre.game_count }} title{{ genre.game_count|pluralize }}</p>
+        </article>
+    {% empty %}
+        <article class="empty-card glass-card">
+            <h3>No genres yet</h3>
+            <p>Start by adding genres in the admin panel so discovery sections can light up.</p>
+        </article>
+    {% endfor %}
+</section>
+
+<section class="section-heading">
+    <div>
+        <span class="eyebrow">Trending now</span>
+        <h2>Momentum picks</h2>
+    </div>
+    <a class="text-link" href="{% url 'browse' %}?sort=rating">See all</a>
+</section>
+<section class="card-grid">
+    {% for game in trending_games %}
+        {% include "core/partials/game_card.html" with game=game %}
+    {% empty %}
+        <article class="empty-card glass-card">
+            <h3>Trending shelf is empty</h3>
+            <p>Mark games as trending to populate this premium showcase.</p>
+        </article>
+    {% endfor %}
+</section>
+
+<section class="feature-band">
+    <div class="feature-band-copy">
+        <span class="eyebrow">Design direction</span>
+        <h2>Luxury editorial feel meets modern game discovery.</h2>
+        <p>The new DEMON ZONE UI leans into layered motion, warm neon accents, bold type, and collectible-card presentation to make every title feel high value.</p>
+    </div>
+    <div class="feature-band-panels">
+        <article class="glass-card">
+            <strong>Cloudinary ready</strong>
+            <p>Use hosted covers, banners, and trailers without changing the UI structure.</p>
+        </article>
+        <article class="glass-card">
+            <strong>Admin driven</strong>
+            <p>Every featured lane can be updated from Django admin instead of editing templates.</p>
+        </article>
+    </div>
+</section>
+
+<section class="section-heading">
+    <div>
+        <span class="eyebrow">Fresh arrivals</span>
+        <h2>New release spotlight</h2>
+    </div>
+</section>
+<section class="card-grid">
+    {% for game in new_releases %}
+        {% include "core/partials/game_card.html" with game=game %}
+    {% empty %}
+        <article class="empty-card glass-card">
+            <h3>No new releases yet</h3>
+            <p>Mark a title as a new release for instant homepage placement.</p>
+        </article>
+    {% endfor %}
+</section>
+
+<section class="section-heading">
+    <div>
+        <span class="eyebrow">Staff selection</span>
+        <h2>Editor's picks</h2>
+    </div>
+</section>
+<section class="editorial-grid">
+    {% for game in editors_picks %}
+        <article class="editorial-card glass-card">
+            <img src="{{ game.banner_url }}" alt="{{ game.title }}">
+            <div class="editorial-copy">
+                <span class="eyebrow">Editor's pick</span>
+                <h3>{{ game.title }}</h3>
+                <p>{{ game.short_description }}</p>
+                <a class="text-link" href="{{ game.get_absolute_url }}">Open title</a>
+            </div>
+        </article>
+    {% empty %}
+        <article class="empty-card glass-card">
+            <h3>No editor's picks yet</h3>
+            <p>Toggle the flag on standout games to unlock this showcase lane.</p>
+        </article>
+    {% endfor %}
+</section>
+{% endblock %}

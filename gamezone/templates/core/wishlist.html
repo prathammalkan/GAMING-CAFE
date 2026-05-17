@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}DEMON ZONE | Wishlist{% endblock %}
+
+{% block content %}
+<section class="section-heading">
+    <div>
+        <span class="eyebrow">Personal shelf</span>
+        <h1>Your wishlist</h1>
+        <p>Keep a sharp list of the games you want to return to next.</p>
+    </div>
+</section>
+
+<section class="card-grid">
+    {% for item in items %}
+        {% include "core/partials/game_card.html" with game=item.game %}
+    {% empty %}
+        <article class="empty-card glass-card">
+            <h3>Your wishlist is empty</h3>
+            <p>Save standout titles from the game detail page and build your own collection.</p>
+        </article>
+    {% endfor %}
+</section>
+{% endblock %}
